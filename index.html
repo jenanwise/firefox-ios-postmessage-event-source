@@ -1,0 +1,34 @@
+<html>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <body>
+    <script>
+      if (!window.opener) {
+        // The outer frame adds a button to the page that, when clicked, opens a
+        // new window, waits for a message, reports whether the event's `source`
+        // matches the opened window, and then closes the window.
+        var innerWindow;
+        window.addEventListener('message', function(event) {
+          document.body.innerHTML = (
+            'Received message event from innerWindow<br>event.source === innerWindow: ' +
+            (event.source === innerWindow));
+          innerWindow.close();
+        });
+
+        var button = document.createElement('button');
+        button.textContent = 'Click me';
+        document.body.appendChild(button);
+
+        button.addEventListener('click', function() {
+          // Using a string for the url, as we do below, results in
+          // `event.source` not equalling `innerWindow`. However, if
+          // `window.location` is used, they are equal.
+          innerWindow = window.open(window.location.pathname, '_blank');
+        });
+
+      } else {
+        // The inner window just `postMessage`s back to the opening frame.
+        window.opener.postMessage('ping', '*');
+      }
+    </script>
+  </body>
+</html>
